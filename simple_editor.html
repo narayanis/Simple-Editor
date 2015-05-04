@@ -14,8 +14,8 @@
             padding-top: 2px;
         }
         
-        input[type="button"], select {
-            width: 120px;
+        input[type="button"], select, label {
+            width: 150px;
             margin-left: 35px;
             display: block;
             float: left;
@@ -40,6 +40,7 @@
 
 <body>
     <header id="header">
+        <label for="codeLanguage">Choose your Language</label>
         <select id="codeLanguage" name="codeLanguage">
             <option value="html">HTML</option>
             <option value="javascript">JavaScript</option>
@@ -58,10 +59,16 @@
     <script>
         var editor = ace.edit("editor");
         editor.setTheme("ace/theme/twilight");
-        editor.setHighlightActiveLine(true);
         editor.$blockScrolling = Infinity
-        editor.getSession().setMode("ace/mode/sql");
-        editor.session.setNewLineMode('windows');
+        editor.setOptions({
+            highlightActiveLine: true,
+            enableSnippets: true,
+            enableBasicAutocompletion: true,
+        });
+        editor.session.setOptions({
+            mode: "ace/mode/sql",
+            newLineMode: "windows",
+        });
 
 
 
@@ -69,8 +76,6 @@
 
             $("#codeLanguage").change(function() {
                 var langCode = $('#codeLanguage :selected').val();
-console.log(langCode);
-
                 editor.getSession().setMode("ace/mode/" + langCode);
             });
 
