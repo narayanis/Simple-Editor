@@ -10,130 +10,126 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
     <style type="text/css" media="screen">
-
-html, body {
-width: 100%;
-height: 100%;
-}
-
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+        
         header {
             padding-top: 10px;
         }
         
-        input[type="button"], select, label {
+        input[type="button"],
+        select,
+        label {
             margin-left: 20px;
             margin-bottom: 10px;
         }
-
     </style>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/ace/1.1.9/min/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
-
-
 </head>
 
 <body>
-<div id="wrapper" class="container-fluid">
-    <header id="header" class="row">
-        <label for="codeLanguage">Choose your Language</label>
-        <select id="codeLanguage" name="codeLanguage">
-            <option value="html">HTML</option>
-            <option value="javascript">JavaScript</option>
-            <option value="sql" selected="selected">SQL</option>
-            <option value="vbscript">VBScript</option>
-        </select>
-        <input type="button" id="loadFile" name="loadFile" value="Load File" />
-        <input type="file" id="fileToLoad" name="file" style="display:none;" />
-        <input type="button" name="save" id="save" value="Save File" />
-    </header>
+    <div id="wrapper" class="container-fluid">
+        <header id="header" class="row">
+            <label for="codeLanguage">Choose your Language</label>
+            <select id="codeLanguage" name="codeLanguage">
+                <option value="html">HTML</option>
+                <option value="javascript">JavaScript</option>
+                <option value="sql" selected="selected">SQL</option>
+                <option value="vbscript">VBScript</option>
+            </select>
+            <input type="button" id="loadFile" name="loadFile" value="Load File" />
+            <input type="file" id="fileToLoad" name="file" style="display:none;" />
+            <input type="button" name="save" id="save" value="Save File" />
+        </header>
 
-<main class="row">
-        <section id="right" class="col-md-12">
-            <pre id="editor" /></pre>
-        </section>
-    </main>
+        <main class="row">
+            <section id="editor" class="col-md-12">
+                <pre id="editor" /></pre>
+            </section>
+        </main>
 
-<footer><a target="_blank" href="http://lowcountrygenius.com">Lowcountry Genius, LLC</a>
-</footer>
+        <footer>
+		    <a target="_blank" href="http://lowcountrygenius.com">Lowcountry Genius, LLC</a>
+        </footer>
 
-
-    <script>
-        var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/twilight");
-        editor.$blockScrolling = Infinity
-        editor.setOptions({
-            highlightActiveLine: true,
-            enableSnippets: true,
-            enableBasicAutocompletion: true,
-        });
-        editor.session.setOptions({
-            mode: "ace/mode/sql",
-            newLineMode: "windows",
-        });
-
-
-
-        $('document').ready(function() {
-
-
-            $("#editor").height( $('body').height() - 100);
-
-            $("#codeLanguage").change(function() {
-                var langCode = $('#codeLanguage :selected').val();
-                editor.getSession().setMode("ace/mode/" + langCode);
+        <script>
+            var editor = ace.edit("editor");
+            editor.setTheme("ace/theme/twilight");
+            editor.$blockScrolling = Infinity
+            editor.setOptions({
+                highlightActiveLine: true,
+                enableSnippets: true,
+                enableBasicAutocompletion: true,
+            });
+            editor.session.setOptions({
+                mode: "ace/mode/sql",
+                newLineMode: "windows",
             });
 
-            $("#loadFile").click(function() {
-                $('#fileToLoad').click();
+            $('document').ready(function() {
+
+			    //set editor height to full screen
+                $("#editor").height($('body').height() - 100);
+
+                $("#codeLanguage").change(function() {
+                    var langCode = $('#codeLanguage :selected').val();
+                    editor.getSession().setMode("ace/mode/" + langCode);
+                });
+
+                $("#loadFile").click(function() {
+                    $('#fileToLoad').click();
+                });
+
+
+                $('#fileToLoad').change(function() {
+                    loadTextFile($(this)[0].files[0]);
+                });
+
+
+                $("#save").click(function() {
+                    var saveFileName = prompt("Enter the desired filename", "Download.sql")
+                    saveTextFile(saveFileName);
+                });
+
             });
 
 
-            $('#fileToLoad').change(function() {
-                loadTextFile($(this)[0].files[0]);
-            });
+            function loadTextFile(file) {
+
+                var reader = new FileReader();
+                $(reader).load(function() {
+                    editor.setValue(reader.result, -1);
+                });
+
+                reader.readAsText(file);
+            }
 
 
-            $("#save").click(function() {
-                var saveFileName = prompt("Enter the desired filename", "Download.sql")
-                saveTextFile(saveFileName);
-            });
+            function saveTextFile(filename) {
 
-        });
+                var content = editor.getSession().getValue();
 
+                var dl = document.createElement('a');
+                dl.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+                dl.setAttribute('download', filename);
 
+                // Set hidden so the element doesn't disrupt your page
+                dl.setAttribute('visibility', 'hidden');
+                dl.setAttribute('display', 'none');
+                // Append to page
+                document.body.appendChild(dl);
+                // Now you can trigger the click
+                dl.click();
 
-        function loadTextFile(file) {
-
-            var reader = new FileReader();
-            $(reader).load(function() {
-                editor.setValue(reader.result, -1);
-            });
-
-            reader.readAsText(file);
-        }
-
-
-        function saveTextFile(filename) {
-
-            var content = editor.getSession().getValue();
-
-            var dl = document.createElement('a');
-            dl.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
-            dl.setAttribute('download', filename);
-
-            // Set hidden so the element doesn't disrupt your page
-            dl.setAttribute('visibility', 'hidden');
-            dl.setAttribute('display', 'none');
-            // Append to page
-            document.body.appendChild(dl);
-            // Now you can trigger the click
-            dl.click();
-
-        }
-    </script>
+            }
+        </script>
 
 </body>
 
